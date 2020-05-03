@@ -112,7 +112,7 @@ def czekajnaklawisz(klawisze):
     return(czekajnaklawisz(klawisze))
 def zgraj():
     print("INTERLAVIC OFFLINE LEARNING TOOL.EXE\nSeems like you're using it first time...")
-    input("watch this tutorial: https://youtube.com/watch?/itdoesntevenexist123  and type 'done' when you will know what to do.\n") 
+    input("watch this tutorial: https://youtu.be/hsv8TjJhtxA  and type 'done' when you will know what to do.\n") 
     loc = input("Enter localisation of dictionay:\n")
     print("Wait...")
     Idict = xlrd.open_workbook(loc+"\\new_interslavic_words_list.xlsx")
