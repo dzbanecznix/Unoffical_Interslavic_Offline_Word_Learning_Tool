@@ -13,7 +13,6 @@ p1, p2 = [0, 1, 0], 0
 l3 = len("NEWS&UPDATES")
 import gspread, json
 from oauth2client.service_account import ServiceAccountCredentials
-from pprint import pprint
 version, localisation = "", ""
 def OpenGoogleSheet(filename, jsonpath):
     scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
