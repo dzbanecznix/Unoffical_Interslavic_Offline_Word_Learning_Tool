@@ -2,7 +2,7 @@ import msvcrt, random, os, xlrd, urllib
 from time import sleep
 from urllib.request import urlopen
 clear = lambda: os.system('cls')
-lines = [0, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+lines = [1, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 langs = ["medžuslovjansky", "english", "русский", "Беларускa","українськa","polski","čeština","slovački","Бугарски","Македонски","српски","hrvatski","slovenski","staroslovjansky","deutsch"]
 ll = []
 for lang in langs:
