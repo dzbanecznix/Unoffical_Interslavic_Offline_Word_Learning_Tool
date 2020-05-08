@@ -56,8 +56,6 @@ def getThemes(f1, f2, lang1, lang2, f3):
         if isname:
             themes.append([])
             themes[-1].append(line1[:-1])
-            #themnem.append([])
-            #themnem[-1].append(line[:-1])
         else:
             strs1, strs2, wherecantitbe = [], [], []
             s = ""
