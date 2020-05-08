@@ -409,6 +409,5 @@ try:
 except FileNotFoundError:
     zgraj(False)
 themes, tns, l2 = doths()
-#getready(langs[1], langs[0], tns[0])
 while True:
     menu()
