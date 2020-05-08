@@ -1,6 +1,7 @@
-import msvcrt, random, os, xlrd, urllib
+import msvcrt, random, os, xlrd, urllib, gspread, json
 from time import sleep
 from urllib.request import urlopen
+from oauth2client.service_account import ServiceAccountCredentials
 clear = lambda: os.system('cls')
 lines = [1, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 langs = ["medžuslovjansky", "english", "русский", "Беларускa","українськa","polski","čeština","slovački","Бугарски","Македонски","српски","hrvatski","slovenski","staroslovjansky","deutsch"]
@@ -11,8 +12,6 @@ l = max(ll)
 l = (l//2)*2+1
 p1, p2 = [0, 1, 0], 0
 l3 = len("NEWS&UPDATES")
-import gspread, json
-from oauth2client.service_account import ServiceAccountCredentials
 version, localisation = "", ""
 def OpenGoogleSheet(filename, jsonpath):
     scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
