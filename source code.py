@@ -1,7 +1,6 @@
-import msvcrt, random, os, xlrd, urllib, gspread, json
+import msvcrt, random, os, xlrd, urllib
 from time import sleep
 from urllib.request import urlopen
-from oauth2client.service_account import ServiceAccountCredentials
 clear = lambda: os.system('cls')
 lines = [1, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 langs = ["medžuslovjansky", "english", "русский", "Беларускa","українськa","polski","čeština","slovački","Бугарски","Македонски","српски","hrvatski","slovenski","staroslovjansky","deutsch"]
@@ -12,6 +11,9 @@ l = max(ll)
 l = (l//2)*2+1
 p1, p2 = [0, 1, 0], 0
 l3 = len("NEWS&UPDATES")
+import gspread, json
+from oauth2client.service_account import ServiceAccountCredentials
+from pprint import pprint
 version, localisation = "", ""
 def OpenGoogleSheet(filename, jsonpath):
     scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
@@ -24,7 +26,7 @@ def doths():
     version = open("C:\\InterslavicDictionary\\version.txt", "r", encoding = "utf-8").read()
     localisation = open("C:\\InterslavicDictionary\\localisation.txt", "r", encoding = "utf-8").read()
     names0, nums0 = ["Evrething"], [-1]
-    themes, tns = getThemes(open("C:\\InterslavicDictionary\\themes(en).txt", "r", encoding = "utf-8").readlines(), open("C:\\InterslavicDictionary\\themes(isv).txt", "r", encoding = "utf-8").readlines(), open("C:\\InterslavicDictionary\\medžuslovjansky.txt", "r", encoding = "utf-8").readlines(), open("C:\\InterslavicDictionary\\english.txt", "r", encoding = "utf-8").readlines(), open("C:\\InterslavicDictionary\\things_that_cant_be_in_themes.txt", "r", encoding = "utf-8").readlines())
+    themes, tns = getThemes(open("C:\\InterslavicDictionary\\themes.txt", "r", encoding = "utf-8").readlines(), open("C:\\InterslavicDictionary\\english.txt", "r", encoding = "utf-8").readlines(), open("C:\\InterslavicDictionary\\things_that_cant_be_in_themes.txt", "r", encoding = "utf-8").readlines())
     themes, tns = names0 + themes, nums0 + tns
     ll2 = []
     for theme in themes:
@@ -32,77 +34,53 @@ def doths():
     l2 = max(ll2)
     l2 = (l2//2)*2+1
     return(themes, tns, l2)
-def getnum(what2, what1, where1, where2, wherecantitbe, whatcantitbe):
+def getnum(what, where, wherecantitbe, whatcantitbe):
     i = 0
-    while i < len(where1):
-        thing1, thing2 = where1[i], where2[i]
-        if what1 in thing1 and what2 in thing2 and not i in wherecantitbe:
+    while i < len(whatcantitbe):
+        if whatcantitbe[i] != "-":
+            whatcantitbe[i] = int(whatcantitbe[i])
+        i+=1
+    i = 0
+    while i < len(where):
+        thing = split(where[i])
+        if what in thing and not i in whatcantitbe:
             can = True
-            for thing in whatcantitbe:
-                if thing in thing2 or thing2 in thing:
-                    can = False
             if can:
                 return(i)
         i+=1
     return(-1)
-def getThemes(f1, f2, lang1, lang2, f3):
+def split(item):
+    item += ","
+    strs = []
+    s = ""
+    for zn in item:
+        if zn == ",":
+            if s[0] == " ":
+                s = s[1:]
+            if s[-1] == "\n":
+                s = s[:-1]
+            if s[-1] == " ":
+                s = s[:-1]
+            strs.append(s)
+            s = ""
+        else:
+            s += zn
+    return(strs)
+def getThemes(f, lang, f2):
     themes = []        
     isname = False
-    for i in range(len(f1)-2):
-        line1 = f1[i]
+    for i in range(len(f)-2):
+        line = f[i]
         line2 = f2[i]
-        line3 = f3[i]
         isname = not(isname)
         if isname:
             themes.append([])
-            themes[-1].append(line1[:-1])
-        else:
-            strs1, strs2, wherecantitbe = [], [], []
-            s = ""
-            line1 += ","
-            line2 += ","
-            line3 += ","
-            for zn in line1:
-                if zn == ",":
-                    if s[0] == " ":
-                        s = s[1:]
-                    if s[-1] == "\n":
-                        s = s[:-1]
-                    if s[-1] == " ":
-                        s = s[:-1]
-                    strs1.append(s)
-                    s = ""
-                else:
-                    s += zn
-            s = ""
-            for zn in line2:
-                if zn == ",":
-                    if s[0] == " ":
-                        s = s[1:]
-                    if s[-1] == "\n":
-                        s = s[:-1]
-                    if s[-1] == " ":
-                        s = s[:-1]
-                    strs2.append(s)
-                    s = ""
-                else:
-                    s += zn
-            s = ""
-            for zn in line3:
-                if zn == ",":
-                    if s[0] == " ":
-                        s = s[1:]
-                    if s[-1] == "\n":
-                        s = s[:-1]
-                    if s[-1] == " ":
-                        s = s[:-1]
-                    wherecantitbe.append(s)
-                    s = ""
-                else:
-                    s += zn
-            for i in range(len(strs1)):
-                s1, s2 = strs1[i], strs2[i]
-                n = getnum(s1, s2,lang1, lang2, themes[-1], wherecantitbe)
+            themes[-1].append(line[:-1])
+        else: 
+            strs, wherecantitbe = split(line), split(line2)
+            for i in range(len(strs)):
+                s = strs[i]
+                n = getnum(s, lang, themes[-1], wherecantitbe)
                 if n != -1:
                     themes[-1].append(n)
     themes0, themes1 = [], []
@@ -124,7 +102,7 @@ def czekajnaklawisz(klawisze):
 def zgraj(update):
     if not update:
         print("INTERLAVIC OFFLINE LEARNING TOOL.EXE\nSeems like you're using it first time...")
-        input("watch this tutorial: https://youtu.be/hsv8TjJhtxA  and type 'done' when you will know what to do.\n")
+        input("watch this tutorial: https://youtu.be/s0CTv8x38Ao and type 'done' when you will know what to do.\n")
     else:
         clear()
         print("Updating: INTERLAVIC OFFLINE LEARNING TOOL.EXE")
@@ -161,19 +139,12 @@ def zgraj(update):
         str1+= "\n"
         str1+=sheet1.cell(i, 2).value
         str1+="\n"
-        str2+=cell
-        str2+= "\n"
-        str2+=sheet1.cell(i, 3).value
-        str2+="\n"
         str3+=cell
         str3+= "\n"
         str3+=sheet1.cell(i, 4).value
         str3+="\n"
-    txt = open("C:\\InterslavicDictionary\\themes(en).txt", "w", encoding = "utf-8")
+    txt = open("C:\\InterslavicDictionary\\themes.txt", "w", encoding = "utf-8")
     txt.write(str1)
-    txt.close()
-    txt = open("C:\\InterslavicDictionary\\themes(isv).txt", "w", encoding = "utf-8")
-    txt.write(str2)
     txt.close()
     txt = open("C:\\InterslavicDictionary\\things_that_cant_be_in_themes.txt", "w", encoding = "utf-8")
     txt.write(str3)
@@ -208,26 +179,34 @@ def przepytaj(n, f, s2, s3):
 def run(l2, l1, s1, s2, s3, thm):
     foreign = open("C:\\InterslavicDictionary\\"+l1+".txt", "r", encoding = "utf-8").readlines()
     native = open("C:\\InterslavicDictionary\\"+l2+".txt", "r", encoding = "utf-8").readlines()
-    Pl, Is = [], []
+    from_lang, to_lang = [], []
     if thm == -1:
-        Pl, Is = native[1:], foreign[1:]
+        from_lang, to_lang = native[1:], foreign[1:]
     else:
         for n in thm:
-            Pl.append(native[n])
-            Is.append(foreign[n])
-    maxx = len(Pl)
+            from_lang.append(native[n])
+            to_lang.append(foreign[n])
+    maxx = len(from_lang)
     i = 0
     nf, nn = [], []
     nmx = 0
     while i < maxx:
-        if not(Is[i] == "!\n" or Pl[i] == "!\n"):
+        if not(to_lang[i] == "!\n" or from_lang[i] == "!\n"):
             nmx += 1
-            nf.append(Is[i])
-            nn.append(Pl[i])
+            nf.append(to_lang[i])
+            nn.append(from_lang[i])
         i+=1
     ran = input(s1+str(nmx)+"):\n")
     ms = ""
     tr = []
+    if ran == "#show":
+        clear()
+        i = 0
+        while i < len(thm):
+            print(from_lang[i][:-1], ":", thm[i])
+            i+=1
+        input()
+        return()
     for zn in ran:
         if zn != "-":
             ms += zn
@@ -239,18 +218,16 @@ def run(l2, l1, s1, s2, s3, thm):
     mx = tr[1]-1
     key = b''
     i = 0
-    newis = []
-    newnt = []
+    newForeign = []
+    newNative = []
     while i <= mx-mn:
         rand = random.randint(mn, mx-i)
-        newis.append(nf.pop(rand))
-        newnt.append(nn.pop(rand))
+        newForeign.append(nf.pop(rand))
+        newNative.append(nn.pop(rand))
         i += 1
-    przepytaj(newnt, newis, s2, s3)
+    przepytaj(newNative, newForeign, s2, s3)
     print("You already know all the words!\nPress space to back to menu.")
     czekajnaklawisz([b' '])
-    while True:
-        menu()
 def plus1(var, minv, maxv):
     var += 1
     if var > maxv:
@@ -407,5 +384,6 @@ try:
 except FileNotFoundError:
     zgraj(False)
 themes, tns, l2 = doths()
+#getready(langs[1], langs[0], tns[0])
 while True:
     menu()
