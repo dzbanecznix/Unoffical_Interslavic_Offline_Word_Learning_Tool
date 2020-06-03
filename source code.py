@@ -69,14 +69,14 @@ def split(item):
 def getThemes(f, lang, f2):
     themes = []        
     isname = False
-    for i in range(len(f)-2):
+    for i in range(len(f)):
         line = f[i]
         line2 = f2[i]
         isname = not(isname)
         if isname:
             themes.append([])
             themes[-1].append(line[:-1])
-        else: 
+        else:
             strs, wherecantitbe = split(line), split(line2)
             for i in range(len(strs)):
                 s = strs[i]
@@ -134,15 +134,30 @@ def zgraj(update):
     str1, str2, str3 = "", "", ""
     while cell != "":
         i+=1
-        cell= sheet1.cell(i, 1).value
-        str1+= cell
-        str1+= "\n"
-        str1+=sheet1.cell(i, 2).value
-        str1+="\n"
-        str3+=cell
-        str3+= "\n"
-        str3+=sheet1.cell(i, 4).value
-        str3+="\n"
+        cell=sheet1.cell(i, 1).value
+        if cell != "":
+            str1+= cell
+            str1+= "\n"
+            str1+=sheet1.cell(i, 2).value
+            str1+="\n"
+            str3+=cell
+            str3+= "\n"
+            str3+=sheet1.cell(i, 4).value
+            str3+="\n"
+        if youAreACheater:
+            cell = "nothing"
+            while cell != "":
+                i+=1
+                cell=sheet1.cell(i, 1).value
+                if cell != "":
+                    str1+= cell
+                    str1+= "\n"
+                    str1+=sheet1.cell(i, 2).value
+                    str1+="\n"
+                    str3+=cell
+                    str3+= "\n"
+                    str3+=sheet1.cell(i, 4).value
+                    str3+="\n"
     txt = open("C:\\InterslavicDictionary\\themes.txt", "w", encoding = "utf-8")
     txt.write(str1)
     txt.close()
@@ -150,12 +165,15 @@ def zgraj(update):
     txt.write(str3)
     txt.close()
     txt = open("C:\\InterslavicDictionary\\version.txt", "w", encoding = "utf-8")
-    txt.write(sheet1.cell(1, 5).value)
+    txt.write(sheet1.cell(1, 6).value)
     txt.close()
     print("Saving localisation...")
     txt = open("C:\\InterslavicDictionary\\localisation.txt", "w", encoding = "utf-8")
     txt.write(loc+"\\Unoffical_Interslavic_Offline_Word_Learning_Tool\\test projektu-9f91d648512d.json")
     txt.close()
+    if update:
+        global themes, tns, l2
+        themes, tns, l2 = doths()
     print("Done :). Press space to continue.")
     czekajnaklawisz([b' '])
 def przepytaj(n, f, s2, s3):
@@ -321,7 +339,7 @@ def printnews():
         urlopen("https://www.google.com", timeout = 1)
         print("Checking...")
         sheet1 = OpenGoogleSheet("test arkusza", localisation)
-        s = sheet1.cell(2, 5).value
+        s = sheet1.cell(2, 6).value
         ous = ""
         for zn in s:
             if zn == "\\":
@@ -330,13 +348,15 @@ def printnews():
                 ous += zn
         clear()
         print(ous)
-        newversion = sheet1.cell(1, 5).value
+        newversion = sheet1.cell(1, 6).value
         if version != newversion:
             print("\nThere's a newer version! press 'u' to update, space to go back to menu.")
         else:
             print("\nThere are no updates.\nPress space to go back to menu.")
-        key = czekajnaklawisz([b' ', b'u', b'U'])
-        if key == 1 or key == 2:
+        key = czekajnaklawisz([b' ', b'u', b'U', b'q'])
+        if key == 1 or key == 2 or key == 3:
+            if key == 4:
+                youAreACheater = True
             updating = True
             zgraj(True)
     except:
@@ -378,12 +398,12 @@ def getready(l1, l2, thm):
     st3 = "Have you guessed?\nYes - press right arrow, No - press left arrow."
     run(l1, l2, st1, st2, st3, thm)
 #########################################################################################       
+youAreACheater = False
 try:
-    Is = open("C:\\InterslavicDictionary\\"+langs[0]+".txt", "r", encoding = "utf-8").read()
+    Is = open("C:\\InterslavicDictionary\\themes.txt", "r", encoding = "utf-8").read()
     Is = ""
 except FileNotFoundError:
     zgraj(False)
 themes, tns, l2 = doths()
-#getready(langs[1], langs[0], tns[0])
 while True:
     menu()
